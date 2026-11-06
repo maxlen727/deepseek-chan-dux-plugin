@@ -68,8 +68,9 @@ die() {
 
 # curl | bash 时 stdin 是管道，提问从终端读
 TTY=/dev/tty
+NO_TTY=0
 if [[ $ASSUME_YES -eq 0 ]] && ! { : <"$TTY"; } 2>/dev/null; then
-    warn "没有可交互的终端，全部使用默认值"
+    NO_TTY=1
     ASSUME_YES=1
 fi
 
@@ -116,11 +117,13 @@ choose() {
     local __var=$1 prompt=$2 def=$3
     shift 3
     local i=1 opt
-    echo "  $prompt"
-    for opt in "$@"; do
-        printf '    %s%d)%s %s\n' "$B" "$i" "$N" "${opt#*|}"
-        i=$((i + 1))
-    done
+    if [[ $ASSUME_YES -eq 0 ]]; then
+        echo "  $prompt"
+        for opt in "$@"; do
+            printf '    %s%d)%s %s\n' "$B" "$i" "$N" "${opt#*|}"
+            i=$((i + 1))
+        done
+    fi
     local pick
     while true; do
         ask pick "选择" "$def"
@@ -459,19 +462,22 @@ offer_house() {
 }
 
 summary() {
+    local SELF="$0"
+    [[ -n $SCRIPT_DIR ]] || SELF="bash $PLUGIN_SRC/install.sh"
     step "装好了"
     cat <<EOF
   ${B}玩法${N}：点它 Q 弹一下 · 拖着甩出去 · 右键菜单里聊天 / 待办 / 查余额 / 睡觉
   ${B}设置${N}：设置 → 插件 → DeepSeek-chan Desktop Pet，或者直接改 $PET_CFG
   ${B}命令${N}：dms ipc call $PLUGIN_ID say "你好"   ·   dms ipc call $PLUGIN_ID todoAdd "18:30 开会"
   ${B}更新${N}：重新运行这个脚本（或在仓库里 git pull 后 dms restart）
-  ${B}卸载${N}：$0 --uninstall [--purge]
+  ${B}卸载${N}：$SELF --uninstall [--purge]
 EOF
 }
 
 # ------------------------------------------------------------------ main
 
 printf '%s🐋 DeepSeek 鲸鱼娘桌宠 · Dux shell 插件%s\n' "$B" "$N"
+[[ $NO_TTY -eq 1 ]] && warn "没有可交互的终端，全部使用默认值（之后可以运行 install.sh --configure 重新配置）"
 case $MODE in
 uninstall)
     uninstall
