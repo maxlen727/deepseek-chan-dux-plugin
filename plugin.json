@@ -1,0 +1,33 @@
+{
+  "id": "duxPet",
+  "name": "DeepSeek-chan Desktop Pet",
+  "description": "DeepSeek 鲸鱼娘「大肥鱼」桌宠：桌面漫游、拖拽甩抛、碎碎念与 AI 对话、待办提醒、余额查询（素材与玩法移植自 dsh-pet）",
+  "category": "fun",
+  "version": "0.2.0",
+  "author": "maxlen727",
+  "license": "MIT",
+  "icon": "pets",
+  "type": "composite",
+  "capabilities": [
+    "daemon",
+    "desktop-widget"
+  ],
+  "components": {
+    "daemon": "./PetDaemon.qml",
+    "desktop": "./DesktopPet.qml"
+  },
+  "settings": "./PetSettings.qml",
+  "repo": "https://github.com/maxlen727/deepseek-chan-dux-plugin",
+  "compositors": [
+    "any"
+  ],
+  "dependencies": [
+    "libnotify"
+  ],
+  "requires_dms": ">=1.5.0",
+  "permissions": [
+    "settings_read",
+    "settings_write",
+    "process"
+  ]
+}
